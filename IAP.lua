@@ -78,7 +78,7 @@
 
 	...
 
-	-- when need to purchase product
+	-- when you need to purchase a product
 	IAP:purchase(IAP.products[1], function(errorString)
 		print("Purchase callback: ");
 		if not errorString then
@@ -92,7 +92,11 @@
 ]]--
 local IAP = {};
 
-local fileManager = require("FileManager"); -- dependency
+--------------------------------------------------------------------------------
+--	Dependencies
+--------------------------------------------------------------------------------
+
+local fileManager = require("FileManager");
 
 --------------------------------------------------------------------------------
 --	Public properties
@@ -159,7 +163,6 @@ Platform.iOS = "iPhone OS";
 
 -- Transaction listener function
 local function transactionListener( event )
-	console.log("----------------------");
 	if not ( event.transaction.state == "failed" or event.transaction.state=="cancelled" ) then  -- Successful transaction
 		local productID = event.transaction.productIdentifier;
 		local productState = tostring(event.transaction.state);
@@ -203,24 +206,6 @@ local function transactionListener( event )
 	if(Platform.Current==Platform.iOS) then
 		-- tell the store that the transaction is finished
 		store.finishTransaction( event.transaction );
-	end
-
-	for i=1,#IAP.products do
-		local product = IAP.products[i];
-		console:log(product.productIdentifier);
-		console:log("Title: "..tostring(product.title));
-		console:log("Description: "..tostring(product.description));
-		console:log("Localized price: "..tostring(product.localizedPrice));
-		console:log("Currency: "..tostring(product.priceCurrencyCode));
-		console:log("Is owned: "..tostring(product.isOwned));
-		console:log("--");
-	end
-
-	if(event.transaction.state == "restored") then
-		console:log("Localized price: "..tostring(event.transaction.originalReceipt));
-		console:log("Currency: "..tostring(event.transaction.originalIdentifier));
-		console:log("Is owned: "..tostring(event.transaction.originalDate));
-		console:log("--");
 	end
 end
 
@@ -342,7 +327,6 @@ consume = function(product, consumedCallback)
 end
 
 restore = function()
-	console:log("RESTORE")
 	if(Platform.Current==Platform.Android or Platform.Current==Platform.iOS) then
 		store.restore();
 	end
