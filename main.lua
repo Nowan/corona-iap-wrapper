@@ -9,8 +9,9 @@ IAP:init();
 
 local widget = require("widget");
 menuHeight = 50;
+iosPadding = 20;
 
-console = native.newTextBox(0,menuHeight,display.contentWidth,display.contentHeight-menuHeight);
+console = native.newTextBox(0,menuHeight+iosPadding,display.contentWidth,display.contentHeight-iosPadding-menuHeight);
 console.anchorX=0; console.anchorY=0;
 console.isEditable = false;
 console.hasBackground = false;
@@ -18,7 +19,7 @@ console:setTextColor( 0.9, 0.9, 0.9 );
 
 local logs = "";
 function console:log(text)
-	logs = logs..text.."\n";
+	logs = logs..tostring(text).."\n";
 	console.text = logs;
 end
 
@@ -33,16 +34,16 @@ local function onBuyClicked( event )
         IAP:purchase(IAP.products[1], function(errorString)
 			console:log("\nPURCHASE CALLBACK: \n");
 			if not errorString then
-				for i=1,#IAP.products do
+				--[[for i=1,#IAP.products do
 					local product = IAP.products[i];
 					console:log(product.productIdentifier);
-					console:log("Title: "..product.title);
-					console:log("Description: "..product.description);
-					console:log("Localized price: "..product.localizedPrice);
-					console:log("Currency: "..product.priceCurrencyCode);
+					console:log("Title: "..tostring(product.title));
+					console:log("Description: "..tostring(product.description));
+					console:log("Localized price: "..tostring(product.localizedPrice));
+					console:log("Currency: "..tostring(product.priceCurrencyCode));
 					console:log("Is owned: "..tostring(product.isOwned));
 					console:log("----------------------");
-				end
+				end]]--
 			else
 				console:log(tostring(errorString));
 			end
@@ -60,16 +61,16 @@ local function onConsumeClicked( event )
         IAP:consume(IAP.products[1], function(errorString)
 			console:log("\nCONSUME CALLBACK: \n");
 			if not errorString then
-				for i=1,#IAP.products do
+				--[[for i=1,#IAP.products do
 					local product = IAP.products[i];
 					console:log(product.productIdentifier);
-					console:log("Title: "..product.title);
-					console:log("Description: "..product.description);
-					console:log("Localized price: "..product.localizedPrice);
-					console:log("Currency: "..product.priceCurrencyCode);
+					console:log("Title: "..tostring(product.title));
+					console:log("Description: "..tostring(product.description));
+					console:log("Localized price: "..tostring(product.localizedPrice));
+					console:log("Currency: "..tostring(product.priceCurrencyCode));
 					console:log("Is owned: "..tostring(product.isOwned));
 					console:log("----------------------");
-				end
+				end]]--
 			else
 				console:log(tostring(errorString));
 			end
@@ -80,7 +81,7 @@ end
 local buyButton = widget.newButton(
     {
         left = 0,
-        top = 0,
+        top = iosPadding,
 		width = menuHeight*2,
 		height = menuHeight,
         id = "buy",
@@ -92,7 +93,7 @@ local buyButton = widget.newButton(
 local consumeButton = widget.newButton(
     {
         left = display.contentWidth-menuHeight*2,
-        top = 0,
+        top = iosPadding,
 		width = menuHeight*2,
 		height = menuHeight,
         id = "consume",
@@ -112,10 +113,10 @@ timer.performWithDelay(1000, function()
 	for i=1,#IAP.products do
 		local product = IAP.products[i];
 		console:log(product.productIdentifier);
-		console:log("Title: "..product.title);
-		console:log("Description: "..product.description);
-		console:log("Localized price: "..product.localizedPrice);
-		console:log("Currency: "..product.priceCurrencyCode);
+		console:log("Title: "..tostring(product.title));
+		console:log("Description: "..tostring(product.description));
+		console:log("Localized price: "..tostring(product.localizedPrice));
+		console:log("Currency: "..tostring(product.priceCurrencyCode));
 		console:log("Is owned: "..tostring(product.isOwned));
 		console:log("----------------------");
 	end

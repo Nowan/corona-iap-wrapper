@@ -99,8 +99,10 @@ local fileManager = require("FileManager"); -- dependency
 --------------------------------------------------------------------------------
 
 IAP.initialIDs = {
-	"com.warappa.pixelprophecy.landscapes",
-	"com.warappa.pixelprophecy.rooms"
+	"puzzles.landscapes",
+	"puzzles.monsters",
+	"puzzles.space",
+	"puzzles.vehicles"
 };
 
 IAP.products = nil;
@@ -149,9 +151,16 @@ local lCallback, pCallback, cCallback;
 --	Methods initializations
 --------------------------------------------------------------------------------
 
+-- enum with current platform status
+local Platform = {};
+Platform.Current = system.getInfo("platformName");
+Platform.Android = "Android";
+Platform.iOS = "iPhone OS";
+
 -- Transaction listener function
 local function transactionListener( event )
-	if not ( event.transaction.state == "failed" ) then  -- Successful transaction
+	console.log("----------------------");
+	if not ( event.transaction.state == "failed" or event.transaction.state=="cancelled" ) then  -- Successful transaction
 		local productID = event.transaction.productIdentifier;
 		local productState = tostring(event.transaction.state);
 
@@ -190,6 +199,29 @@ local function transactionListener( event )
 	local fileContents = json.encode(IAP.products);
 	fileContents = fileManager:encode(fileContents);
 	fileManager:writeString(fileName, filePath, fileContents);
+
+	if(Platform.Current==Platform.iOS) then
+		-- tell the store that the transaction is finished
+		store.finishTransaction( event.transaction );
+	end
+
+	for i=1,#IAP.products do
+		local product = IAP.products[i];
+		console:log(product.productIdentifier);
+		console:log("Title: "..tostring(product.title));
+		console:log("Description: "..tostring(product.description));
+		console:log("Localized price: "..tostring(product.localizedPrice));
+		console:log("Currency: "..tostring(product.priceCurrencyCode));
+		console:log("Is owned: "..tostring(product.isOwned));
+		console:log("--");
+	end
+
+	if(event.transaction.state == "restored") then
+		console:log("Localized price: "..tostring(event.transaction.originalReceipt));
+		console:log("Currency: "..tostring(event.transaction.originalIdentifier));
+		console:log("Is owned: "..tostring(event.transaction.originalDate));
+		console:log("--");
+	end
 end
 
 local function productsCallback(event)
@@ -249,12 +281,6 @@ local function productsCallback(event)
 	end
 end
 
--- enum with current platform status
-local Platform = {};
-Platform.Current = system.getInfo("platformName");
-Platform.Android = "Android";
-Platform.iOS = "iPhone OS";
-
 init = function()
 	-- convert IAP.products from string array to tables array
 	local prevProducts = IAP.initialIDs;
@@ -276,7 +302,8 @@ init = function()
 		store = require("plugin.google.iap.v3");
 		store.init(transactionListener);
 	elseif(Platform.Current==Platform.iOS) then
-
+		store = require("store");
+		store.init(transactionListener);
 	end
 
 	IAP:loadProducts();
@@ -302,13 +329,20 @@ purchase = function(product, purchasedCallback)
 end
 
 consume = function(product, consumedCallback)
-	if(Platform.Current==Platform.Android or Platform.Current==Platform.iOS) then
-		cCallback = consumedCallback;
+	cCallback = consumedCallback;
+
+	if(Platform.Current==Platform.Android) then
 		store.consumePurchase( product.productIdentifier );
+	elseif(Platform.Current==Platform.iOS) then
+		if cCallback then
+			cCallback("Apple does not support consuming products");
+			cCallback = nil;
+		end
 	end
 end
 
 restore = function()
+	console:log("RESTORE")
 	if(Platform.Current==Platform.Android or Platform.Current==Platform.iOS) then
 		store.restore();
 	end
