@@ -34,7 +34,7 @@ local function onBuyClicked( event )
         IAP:purchase(IAP.products[1], function(errorString)
 			console:log("\nPURCHASE CALLBACK: \n");
 			if not errorString then
-				--[[for i=1,#IAP.products do
+				for i=1,#IAP.products do
 					local product = IAP.products[i];
 					console:log(product.productIdentifier);
 					console:log("Title: "..tostring(product.title));
@@ -43,7 +43,7 @@ local function onBuyClicked( event )
 					console:log("Currency: "..tostring(product.priceCurrencyCode));
 					console:log("Is owned: "..tostring(product.isOwned));
 					console:log("----------------------");
-				end]]--
+				end
 			else
 				console:log(tostring(errorString));
 			end
@@ -61,7 +61,7 @@ local function onConsumeClicked( event )
         IAP:consume(IAP.products[1], function(errorString)
 			console:log("\nCONSUME CALLBACK: \n");
 			if not errorString then
-				--[[for i=1,#IAP.products do
+				for i=1,#IAP.products do
 					local product = IAP.products[i];
 					console:log(product.productIdentifier);
 					console:log("Title: "..tostring(product.title));
@@ -70,7 +70,7 @@ local function onConsumeClicked( event )
 					console:log("Currency: "..tostring(product.priceCurrencyCode));
 					console:log("Is owned: "..tostring(product.isOwned));
 					console:log("----------------------");
-				end]]--
+				end
 			else
 				console:log(tostring(errorString));
 			end
@@ -109,7 +109,7 @@ timer.performWithDelay(1000, function()
 		return;
 	end;
 
-	console:log("\n In-app products: \n");
+	console:log("\n LOADED PRODUCTS: \n");
 	for i=1,#IAP.products do
 		local product = IAP.products[i];
 		console:log(product.productIdentifier);
